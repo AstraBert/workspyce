@@ -81,7 +81,7 @@ fn ask_and_save_version_bump(pyproject: &Path, processed: &mut Vec<String>) {
             }
         }
         let fl_name = format!(".workspyce/{}.md", generate_name().replace(" ", "-"));
-        let contents = format!("---\npackage: {}\nrelease: {}\n---\n{}", project_name, vbump.trim().to_lowercase(), changelog);
+        let contents = format!("---\npackage: {}\npyproject: {:?}\nrelease: {}\n---\n{}", project_name, pyproject, vbump.trim().to_lowercase(), changelog);
         match fs::write(&fl_name, contents) {
             Err(why) => println!("Error while writing version changelog to `{}` directory: {:?}", &fl_name, why.kind()),
             Ok(_) => {},
