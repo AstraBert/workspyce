@@ -1,0 +1,29 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+  "mypy>=1.17.1",
+  "pre-commit>=4.3.0",
+  "pytest>=8.4.1",
+  "pytest-asyncio>=1.1.0",
+  "toml>=0.10.2"
+]
+
+[project]
+name = "toml-workspace"
+version = "0.2.0"
+description = "Your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "tomli-w>=1.2.0"
+]
+
+[tool.uv.sources]
+toml-core = {workspace = true}
+toml-read = {workspace = true}
+
+[tool.uv.workspace]
+members = ["testfiles/*"]
