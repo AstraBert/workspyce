@@ -6,7 +6,7 @@ license-file = "LICENSE"
 readme = "README.md"
 repository = "https://github.com/AstraBert/workspyce"
 description = "A minimal, no-nonsense version manager for uv workspaces, inspired by changesets"
-keywords = ["uv", "python", "versioning", "semver", "version-manager", "workspace"]
+keywords = ["uv", "python", "versioning", "version-manager", "workspace"]
 
 [dependencies]
 clap = { version = "4.5.53", features = ["derive"] }
