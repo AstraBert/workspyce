@@ -42,7 +42,7 @@ fn find_pyproject(file: &Path) -> Result<&Path, String> {
             return Ok(ancestor)
         }
     }
-    return Err("Could not find a parent path that contains a pyproject.toml".to_string())
+    Err("Could not find a parent path that contains a pyproject.toml".to_string())
 }
 
 fn find_project_name(pyproject: &Path) -> String {
@@ -74,18 +74,12 @@ fn ask_and_save_version_bump(pyproject: &Path, processed: &mut Vec<String>) {
         io::stdin()
         .read_line(&mut changelog)
         .expect("Failed to read your input from stdin, please retry");
-        if ! Path::new(".workspyce").exists() {
-            match fs::create_dir(".workspyce") {
-                Err(why) => println!("Error while creating `.workspyce` directory: {:?}", why.kind()),
-                Ok(_) => {},
-            }
+        if ! Path::new(".workspyce").exists() && let Err(why) = fs::create_dir(".workspyce") { 
+            println!("Error while creating `.workspyce` directory: {:?}", why.kind()) 
         }
         let fl_name = format!(".workspyce/{}.md", generate_name().replace(" ", "-"));
         let contents = format!("---\npackage: {}\npyproject: {:?}\nrelease: {}\n---\n{}", project_name, pyproject, vbump.trim().to_lowercase(), changelog);
-        match fs::write(&fl_name, contents) {
-            Err(why) => println!("Error while writing version changelog to `{}` directory: {:?}", &fl_name, why.kind()),
-            Ok(_) => {},
-        }
+        if let Err(why) = fs::write(&fl_name, contents) { println!("Error while writing version changelog to `{}` directory: {:?}", &fl_name, why.kind()) }
         println!("Great! All changes have been saved :)")
     } else {
         println!("Gotcha! The change will be ignored :)")
@@ -93,19 +87,18 @@ fn ask_and_save_version_bump(pyproject: &Path, processed: &mut Vec<String>) {
 }
 
 pub fn check(path: &str) {
-    let members = find_workspace_members(&Path::new(path));
+    let members = find_workspace_members(Path::new(path));
     let files = git_status_files();
     let mut processed: Vec<String> = vec![];
     for file in &files {
-        if file.len() != 0 {
-            if is_workspace_member(&members, file) {
+        if !file.is_empty()
+            && is_workspace_member(&members, file) {
                 println!("Detected changes in {}, which is part of the workspace", file);
                 match find_pyproject(Path::new(file)) {
                     Ok(result) => ask_and_save_version_bump(&result.join("pyproject.toml"), &mut processed),
                     Err(e) => println!("{}", e),
                 }
             }
-        }
     }
 }
 

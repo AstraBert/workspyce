@@ -9,7 +9,7 @@ pub fn release(token: &str) -> Result<bool, String> {
             packages = fs::read_to_string(Path::new(".workspyce/release.txt")).expect("Should be able to read release.txt, since it exists.");
             let to_release: Vec<&str> = packages.split("\n").collect();
             for p in to_release {
-                if p == "" {
+                if p.is_empty() {
                     continue;
                 }
                 println!("Building {}", p);
@@ -20,13 +20,13 @@ pub fn release(token: &str) -> Result<bool, String> {
             let cmd = Command::new("uv").arg("publish").arg("--token").arg(token).spawn().expect("Error executing `uv publish`, check for uv installation and that `./dist` has been correctly created during build.");
             let _output = cmd.wait_with_output().expect("Error executing `uv publish`, check for uv installation and that `./dist` has been correctly created during build.");
             fs::remove_file(Path::new(".workspyce/release.txt")).expect("should be able to remove `.workspyce/release.txt`");
-            return Ok(true);
+            Ok(true)
         }
         Ok(false) => {
-            return Err("No release.txt file, nothing to release".to_string());
+            Err("No release.txt file, nothing to release".to_string())
         }
         Err(e) => {
-            return Err(format!("{}", e));
+            Err(format!("{}", e))
         },
     }
 }
