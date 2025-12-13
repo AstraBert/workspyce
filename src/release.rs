@@ -2,7 +2,7 @@ use std::path::Path;
 use std::fs;
 use std::process::{Command};
 
-pub fn release(token: &str) {
+pub fn release(token: &str) -> Result<bool, String> {
     let packages: String;
     match fs::exists(Path::new(".workspyce/release.txt")) {
         Ok(true) => {
@@ -20,11 +20,32 @@ pub fn release(token: &str) {
             let cmd = Command::new("uv").arg("publish").arg("--token").arg(token).spawn().expect("Error executing `uv publish`, check for uv installation and that `./dist` has been correctly created during build.");
             let _output = cmd.wait_with_output().expect("Error executing `uv publish`, check for uv installation and that `./dist` has been correctly created during build.");
             fs::remove_file(Path::new(".workspyce/release.txt")).expect("should be able to remove `.workspyce/release.txt`");
+            return Ok(true);
         }
         Ok(false) => {
-            println!("No `.workspyce/release.txt` file found, nothing to release...");
-            return;
+            return Err("No release.txt file, nothing to release".to_string());
         }
-        Err(e) => println!("{}", e),
+        Err(e) => {
+            return Err(format!("{}", e));
+        },
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_release_failure() {
+        let tok = "not a token";
+        match release(tok) {
+            Ok(_b) => {
+                eprint!("No error occurred, but one expected");
+                assert!(false)
+            },
+            Err(e ) => {
+                assert_eq!(e, "No release.txt file, nothing to release")
+            }
+        }
     }
 }

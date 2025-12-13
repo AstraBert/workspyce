@@ -83,3 +83,14 @@ pub fn version() {
     let paths = list_all_changelogs();
     bump_all_versions(paths);
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_list_all_changelog() {
+        let paths = list_all_changelogs();
+        assert_eq!(paths[0], Path::new(".workspyce/test-file.md"))
+    }
+}

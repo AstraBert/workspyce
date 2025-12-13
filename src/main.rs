@@ -43,6 +43,14 @@ fn main() {
     match args.cmd {
         Commands::Check { path } => check(&path),
         Commands::Version {} => version(),
-        Commands::Release { token } => release(&token),
+        Commands::Release { token } => {
+            match release(&token) {
+                Ok(true) => {},
+                Ok(false) => {},
+                Err(e ) => {
+                    eprintln!("{}", e)
+                }
+            }
+        },
     }
 }

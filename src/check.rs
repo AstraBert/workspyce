@@ -108,3 +108,54 @@ pub fn check(path: &str) {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_find_workspace_members() {
+        assert_eq!(find_workspace_members(Path::new("testfiles/proj/pyproject.toml"))[0], "testfiles/.*");
+    }
+
+    #[test]
+    fn test_find_pyproject() {
+        match find_pyproject(Path::new("testfiles/proj/childpath/anotherfile.txt")) {
+            Ok(path) => {
+                assert_eq!(path, Path::new("testfiles/proj/"))
+            }
+            Err(e) => {
+                eprintln!("Error during test when no error should have happened: {}", e);
+                assert!(false)
+            }
+        }
+        match find_pyproject(Path::new("testfiles/notapyproject.toml")) {
+            Ok(_path) => {
+                eprint!("No error was thrown where it should have");
+                assert!(false)
+            }
+            Err(e) => {
+                assert_eq!(e, "Could not find a parent path that contains a pyproject.toml")
+            }
+        }
+    }
+
+    #[test]
+    fn test_find_project_name() {
+        assert_eq!(find_project_name(Path::new("testfiles/proj/pyproject.toml")), "toml-workspace");
+    }    
+
+    #[test]
+    fn test_is_workspace_member() {
+        let members: Vec<String> = vec!["packages/.*".to_string()];
+        assert!(is_workspace_member(&members, "packages/coding_agent/hello.py"));
+        assert!(!is_workspace_member(&members, "package/coding_agent/hello.py"))
+    }
+
+    #[test]
+    // test that it does not throw an error
+    fn test_git_status_files() {
+        let _lines = git_status_files();
+        assert!(true)
+    }
+}
