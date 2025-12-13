@@ -2,6 +2,11 @@
 name = "workspyce"
 version = "0.1.0"
 edition = "2024"
+license-file = "LICENSE"
+readme = "README.md"
+repository = "https://github.com/AstraBert/workspyce"
+description = "A minimal, no-nonsense version manager for uv workspaces, inspired by changesets"
+keywords = ["uv", "python", "versioning", "version-manager", "workspace"]
 
 [dependencies]
 clap = { version = "4.5.53", features = ["derive"] }
