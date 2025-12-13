@@ -1,6 +1,10 @@
 mod check;
+mod version;
+mod release;
 
 use crate::check::{check};
+use crate::version::{version};
+use crate::release::{release};
 use clap::{Parser, Subcommand};
 
 #[derive(Parser)]
@@ -21,11 +25,24 @@ enum Commands {
         #[arg(short = 'p', long ="pyproject")]
         path: String,
     },
+    /// bump the version of the packages in the workspace
+    /// that have been modified and recorded within changelog files 
+    /// (in the `.workspyce` directory) with the `check` command.
+    Version {},
+    /// release all the packages that were version-bumped.
+    /// Run only after `check` and `version` both successfully completed.
+    Release {
+        /// Pypi token for publishing the packages
+        #[arg(short = 't', long ="token")]
+        token: String,
+    }
 }
 
 fn main() {
     let args = CliArgs::parse();
     match args.cmd {
-        Commands::Check { path } => check(&path) 
+        Commands::Check { path } => check(&path),
+        Commands::Version {} => version(),
+        Commands::Release { token } => release(&token),
     }
 }
