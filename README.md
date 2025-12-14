@@ -14,12 +14,6 @@ Install:
 cargo install workspyce
 ```
 
-Use the resulting build as an entrypoint:
-
-```bash
-./target/debug/workspyce --help
-```
-
 Use it within a python project:
 
 - Check all packages in the workspace for changes
